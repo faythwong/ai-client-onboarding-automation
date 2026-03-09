@@ -1,0 +1,539 @@
+{
+  "name": "AI Client Onboarding Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "form": "REDACTED_JOTFORM_FORM_ID"
+      },
+      "type": "n8n-nodes-base.jotFormTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "Form Submission Trigger",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "jotFormApi": {
+          "id": "REDACTED",
+          "name": "JotForm OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "17c93a59-fdd0-48f7-aa91-972717f7b513",
+              "leftValue": "={{ $json.Name.first }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "dcd6139d-2d12-4c24-9436-a10d0fbf9a4b",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "REDACTED_TELEGRAM_CHAT_ID",
+        "text": "=⚠️ Validation Error Detected!\nThe incoming data is missing one or more required fields: \n- Customer's first mame: {{ $('Jotform Trigger').item.json.Name.first }}\n- Email: {{ $('Jotform Trigger').item.json.Email }}\nPlease review the submitted data and take action.  \n\n📅 Timestamp: {{ new Date().toLocaleString() }}\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        176
+      ],
+      "id": "REDACTED",
+      "name": "Validation Error Notification",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "email": "={{ $('Jotform Trigger').item.json.Email }}",
+        "additionalFields": {
+          "firstName": "={{ $('Jotform Trigger').item.json.Name.first }}",
+          "lastName": "={{ $('Jotform Trigger').item.json.Name.last }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "REDACTED",
+      "name": "Create CRM Contact",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "REDACTED",
+          "name": "HubSpot OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "REDACTED_TELEGRAM_CHAT_ID",
+        "text": "=🚨 New customer onboarded:\nFull name: {{ $('Jotform Trigger').item.json.Name.first }} {{ $('Jotform Trigger').item.json.Name.last }}\nEmail: {{ $('Jotform Trigger').item.json.Email }}\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        -112
+      ],
+      "id": "REDACTED",
+      "name": "Send Team Alert",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Jotform Trigger').item.json.Email }}",
+        "subject": "Welcome to Our VIP Program!",
+        "message": "👋 Welcome to Our VIP Program! You’re officially in.<br><br> As a member, you’ll get: <ul> <li>Priority reservations</li><li>Exclusive offers</li> <li>VIP-only surprises</li></ul>🎁 Your first reward is unlocked already - we’ll show you how to use it soon.",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "Send Welcome Email",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "Wait 2 hours",
+      "webhookId": "REDACTED_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "REDACTED_GOOGLE_DRIVE_FILE_URL",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "Download Onboarding Guide",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "REDACTED",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Jotform Trigger').item.json.Email }}",
+        "subject": "How Our Loyalty Program Works 🍽️",
+        "message": "Hi! Welcome to our VIP program - we’re happy to have you with us.<br><br>|We’ve attached a short PDF guide that explains how the VIP program works, how rewards are earned, and what benefits you can expect as a loyal guest.<br><br>📎 Please see the attached file: “How Our Loyalty Program Works”.<br><br>If you have any questions after reading the guide, simply reply to this email - we’re always happy to help.<br><br>See you soon,<br>Our Brand",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "Send Program Guide Email",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "Wait 1 day",
+      "webhookId": "REDACTED_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Jotform Trigger').item.json.Email }}",
+        "subject": "Special Offer Just For You - From Our Team",
+        "message": "Hi 👋,<br><br>|As one of our VIP guests, we’ve unlocked a special offer for you.<br><br>🍹 <b>Unlimited complimentary drinks</b><br>Available for a limited time during your visit.<br><br>Simply book using your priority access and mention your VIP status when you arrive.<br><br>We’ll take care of the rest.<br><br>- <b>Our Team</b> ☕✨",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1792,
+        -16
+      ],
+      "id": "REDACTED",
+      "name": "Send Special Offer Email",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "email": "={{ $('Jotform Trigger').item.json.Email }}",
+        "additionalFields": {
+          "leadStatus": "IN_PROGRESS"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        1792,
+        176
+      ],
+      "id": "REDACTED",
+      "name": "Update CRM Status In Progress",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "REDACTED",
+          "name": "HubSpot OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        176
+      ],
+      "id": "REDACTED",
+      "name": "Wait",
+      "webhookId": "REDACTED_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Jotform Trigger').item.json.Email }}",
+        "subject": "Your VIP onboarding is complete!",
+        "message": "=Hi {{ $('Jotform Trigger').item.json.Name.first }}👋,<br><br> Congratulations - your VIP onboarding is complete.<br><br>You’re officially one of our <b>VIP guests</b>.<br>You can now book a table using <b>priority access</b> at any time.<br><br>🎁 We’ve prepared a special gift for you.<br>It will be available within the next <b>7 days</b>, so we’d love to welcome you back soon.<br><br>Just mention your VIP status when booking or show this email on arrival.<br><br>See you soon,<br><b>Our Team</b> ☕✨",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        176
+      ],
+      "id": "REDACTED",
+      "name": "Send Onboarding Complete Email",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "email": "={{ $('Jotform Trigger').item.json.Email }}",
+        "additionalFields": {
+          "leadStatus": "CONNECTED"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        80
+      ],
+      "id": "REDACTED",
+      "name": "Update CRM Status Connected",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "REDACTED",
+          "name": "HubSpot OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "REDACTED_TELEGRAM_CHAT_ID",
+        "text": "=Onboarding for  {{ $('Jotform Trigger').item.json.Name.first }} has finshed. Please prepare a gift.\nEmail: {{ $('Jotform Trigger').item.json.Email }}\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2464,
+        272
+      ],
+      "id": "REDACTED",
+      "name": "Send Final Team Alert",
+      "webhookId": "REDACTED_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Form Submission Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create CRM Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validation Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create CRM Contact": {
+      "main": [
+        [
+          {
+            "node": "Send Team Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 hours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 hours": {
+      "main": [
+        [
+          {
+            "node": "Download Onboarding Guide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Onboarding Guide": {
+      "main": [
+        [
+          {
+            "node": "Send Program Guide Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Program Guide Email": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 day": {
+      "main": [
+        [
+          {
+            "node": "Send Special Offer Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update CRM Status In Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update CRM Status In Progress": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send Onboarding Complete Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Onboarding Complete Email": {
+      "main": [
+        [
+          {
+            "node": "Update CRM Status Connected",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Final Team Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "REDACTED",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "REDACTED_INSTANCE_ID"
+  },
+  "id": "REDACTED",
+  "tags": []
+}
